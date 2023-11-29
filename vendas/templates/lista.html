@@ -1,7 +1,7 @@
 {% load static %}
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 	<head>
 		<meta charset="UTF-8" />
 		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -9,10 +9,20 @@
 			rel="stylesheet"
 			href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.1.1/flowbite.css"
 		/>
-		<link
-			rel="stylesheet"
-			href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css"
-		/>
+		<link rel="icon" type="image/png" href="{% static 'images/logo.svg' %}" />
+		<link rel="stylesheet" href="{% static 'css/style.css'%}" />
+		<script>
+			// On page load or when changing themes, best to add inline in `head` to avoid FOUC
+			if (
+				localStorage.getItem('color-theme') === 'dark' ||
+				(!('color-theme' in localStorage) &&
+					window.matchMedia('(prefers-color-scheme: dark)').matches)
+			) {
+				document.documentElement.classList.add('dark');
+			} else {
+				document.documentElement.classList.remove('dark');
+			}
+		</script>
 		<link rel="image" href="{% static 'images/Letralogo.png' %}" />
 
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -61,7 +71,7 @@
 						<span class="sr-only">Fechar modal</span>
 					</button>
 				</div>
-				<!-- Modal body -->
+				<!-- Modal body Nova Venda-->
 				<form action="{% url 'nova_venda' %}" method="POST" class="p-4 md:p-5">
 					{%csrf_token%}
 					<!-- <div class="grid gap-4 mb-4 grid-cols-2"> -->
@@ -71,6 +81,9 @@
 								type="text"
 								name="produto"
 								id="txt-produto"
+								autocomplete="on"
+								spellcheck="true"
+								autocapitalize="on"
 								class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
 								placeholder=" "
 								required
@@ -216,10 +229,9 @@
 			</div>
 		</div>
 	</div>
-
-	<body>
-		<section class="bg-gray-50 h-screen dark:bg-gray-900 p-3 sm:p-5">
-			<div class="mx-auto max-w-screen-xl py-24 px-4 lg:px-12">
+	<body class="h-screen dark:bg-gray-900 p-3 sm:p-5">
+		<section>
+			<div class="mx-auto max-w-screen-xl pt-24 px-4 lg:px-12">
 				<div
 					class="bg-white dark:bg-gray-800 relative shadow-md sm:rounded-lg overflow-hidden"
 				>
@@ -253,6 +265,7 @@
 										type="text"
 										id="simple-search"
 										name="produto_filtrar"
+										method="GET"
 										class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full pl-10 p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
 										placeholder="Pesquisar"
 									/>
@@ -361,7 +374,7 @@
 								</tr>
 							</thead>
 							{% for i in vendas%}
-							<tbody>
+							<tbody class="vendaslist">
 								<tr class="border-b text-center dark:border-gray-700">
 									<th
 										scope="row"
@@ -484,6 +497,8 @@
 														type="text"
 														name="name"
 														id="name"
+														autocomplete="on"
+														spellcheck="true"
 														value="{{i.Produto}}"
 														class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
 														placeholder="Ex. Apple iMac 27&ldquo;"
@@ -655,382 +670,159 @@ Standard glass, 3.8GHz 8-core 10th-generation Intel Core i7 processor, Turbo Boo
 							{% endfor %}
 						</table>
 					</div>
-				</div>
-				<h1>{{status}}</h1>
-				{% if status == '1' %}
-				<div
-					class="p-4 mb-4 text-sm text-green-800 rounded-lg bg-green-50 dark:bg-gray-800 dark:text-green-400"
-					role="alert"
-				>
-					<span class="font-medium">Success alert!</span> Change a few things up
-					and try submitting again.
-				</div>
-				{% endif %} {% if status == '3' %}
-				<div
-					class="p-4 mb-4 text-sm text-yellow-800 rounded-lg bg-yellow-50 dark:bg-gray-800 dark:text-yellow-300"
-					role="alert"
-				>
-					<span class="font-medium">Warning alert!</span> Change a few things up
-					and try submitting again.
-				</div>
-				{% endif %}
+					<div class="flex flex-col items-center">
+						<!-- Help text -->
+						<span class="text-sm text-gray-700 dark:text-gray-400">
+							Mostrando
+							<span class="font-semibold text-gray-900 dark:text-white"
+								>{{vendas.number}}</span
+							>
+							a
+							<span class="font-semibold text-gray-900 dark:text-white"
+								>10</span
+							>
+							de
+							<span class="font-semibold text-gray-900 dark:text-white"
+								>{{ vendas.paginator.num_pages}}</span
+							>
+							Paginas
+						</span>
+						<!-- Buttons -->
+						{% if vendas.has_previous %}
 
-				<footer>
-					<div id="toast">
-						<div id="img">Icon</div>
-						<div id="desc">A notification message..</div>
+						<div class="inline-flex mt-2 xs:mt-0">
+							<button
+								class="flex items-center justify-center px-3 h-8 text-sm font-medium text-white bg-gray-800 rounded-s hover:bg-gray-900 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+							>
+								<a href="?page={{ vendas.previous_page_number}}">
+									Voltar <a />
+									{% endif %} {% if vendas.has_next %}
+
+									<button
+										class="flex items-center justify-center px-3 h-8 text-sm font-medium text-white bg-gray-800 border-0 border-s border-gray-700 rounded-e hover:bg-gray-900 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+									>
+										<a href="?page={{ vendas.next_page_number}}">
+											Proxima <a />
+											{% endif %}
+
+											<h1>{{status}}</h1>
+											{% if status == '1' %}
+											<div
+												class="p-4 mb-4 text-sm text-green-800 rounded-lg bg-green-50 dark:bg-gray-800 dark:text-green-400"
+												role="alert"
+											>
+												<span class="font-medium">Success alert!</span> Change a
+												few things up and try submitting again.
+											</div>
+											{% endif %} {% if status == '3' %}
+											<div
+												class="p-4 mb-4 text-sm text-yellow-800 rounded-lg bg-yellow-50 dark:bg-gray-800 dark:text-yellow-300"
+												role="alert"
+											>
+												<span class="font-medium">Warning alert!</span> Change a
+												few things up and try submitting again.
+											</div>
+											{% endif %}
+
+											<script
+												src="https://code.jquery.com/jquery-3.6.1.min.js"
+												integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ="
+												crossorigin="anonymous"
+											></script>
+
+											<!--Ajax Scroll-->
+											<script src="https://unpkg.com/@webcreate/infinite-ajax-scroll/dist/infinite-ajax-scroll.min.js"></script>
+
+											<!--Dark Mode-->
+											<script>
+												var themeToggleDarkIcon = document.getElementById(
+													'theme-toggle-dark-icon'
+												);
+												var themeToggleLightIcon = document.getElementById(
+													'theme-toggle-light-icon'
+												);
+
+												// Change the icons inside the button based on previous settings
+												if (
+													localStorage.getItem('color-theme') === 'dark' ||
+													(!('color-theme' in localStorage) &&
+														window.matchMedia('(prefers-color-scheme: dark)')
+															.matches)
+												) {
+													themeToggleLightIcon.classList.remove('hidden');
+												} else {
+													themeToggleDarkIcon.classList.remove('hidden');
+												}
+
+												var themeToggleBtn =
+													document.getElementById('theme-toggle');
+
+												themeToggleBtn.addEventListener('click', function () {
+													// toggle icons inside button
+													themeToggleDarkIcon.classList.toggle('hidden');
+													themeToggleLightIcon.classList.toggle('hidden');
+
+													// if set via local storage previously
+													if (localStorage.getItem('color-theme')) {
+														if (
+															localStorage.getItem('color-theme') === 'light'
+														) {
+															document.documentElement.classList.add('dark');
+															localStorage.setItem('color-theme', 'dark');
+														} else {
+															document.documentElement.classList.remove('dark');
+															localStorage.setItem('color-theme', 'light');
+														}
+
+														// if NOT set via local storage previously
+													} else {
+														if (
+															document.documentElement.classList.contains(
+																'dark'
+															)
+														) {
+															document.documentElement.classList.remove('dark');
+															localStorage.setItem('color-theme', 'light');
+														} else {
+															document.documentElement.classList.add('dark');
+															localStorage.setItem('color-theme', 'dark');
+														}
+													}
+												});
+											</script>
+
+											<!--Reload-->
+											<script>
+												function atualizar() {
+													location.reload();
+												}
+											</script>
+											<!-- Contador -->
+											<script>
+												$(document).ready(function () {
+													$('#decrement-button').click(function () {
+														var $input = $(this).parent().find('input');
+														var count = parseInt($input.val()) - 1;
+														count = count < 1 ? 1 : count;
+														$input.val(count);
+														$input.change();
+														return false;
+													});
+													$('#increment-button').click(function () {
+														var $input = $(this).parent().find('input');
+														$input.val(parseInt($input.val()) + 1);
+														$input.change();
+														return false;
+													});
+												});
+											</script>
+										</a>
+									</button></a
+								>
+							</button>
+						</div>
 					</div>
-
-					<!-- http://jsfiddle.net/m8x1g0q8/ -->
-				</footer>
-
-				<!-- <script>
-
-
-  import { InputCounter } from 'flowbite';
-
-        const $targetEl = document.getElementById('quantity-input');
-
-        const $incrementEl = document.getElementById('increment-button');
-
-        const $decrementEl = document.getElementById('decrement-button');
-
-
-  const options = {
-    minValue: 0,
-    maxValue: null, // infinite
-    onIncrement: () => {
-        console.log('input field value has been incremented');
-    },
-    onDecrement: () => {
-        console.log('input field value has been decremented');
-    }
-};
-
-const instanceOptions = {
-  id: 'quantity-input',
-  override: true
-};
-const counterInput = new InputCounter($targetEl, $incrementEl, $decrementEl, options, instanceOptions);
-
-// get the current value of the input field
-counterInput.getCurrentValue();
-
-// increment the value of the input field
-counterInput.increment();
-
-// decrement the value of the input field
-counterInput.decrement();
-
-</script> -->
-				<script
-					src="https://code.jquery.com/jquery-3.6.1.min.js"
-					integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ="
-					crossorigin="anonymous"
-				></script>
-				<script>
-					<!--Reload-->
-					function atualizar() {
-						location.reload();
-					}
-				</script>
-
-				<script>
-					<!-- Contador -->
-					$(document).ready(function () {
-						$('#decrement-button').click(function () {
-							var $input = $(this).parent().find('input');
-							var count = parseInt($input.val()) - 1;
-							count = count < 1 ? 1 : count;
-							$input.val(count);
-							$input.change();
-							return false;
-						});
-						$('#increment-button').click(function () {
-							var $input = $(this).parent().find('input');
-							$input.val(parseInt($input.val()) + 1);
-							$input.change();
-							return false;
-						});
-					});
-				</script>
-
-				<!-- <script>
-					function launch_toast() {
-						var x = document.getElementById('toast');
-						x.className = 'show';
-						setTimeout(function () {
-							x.className = x.className.replace('show', '');
-						}, 5000);
-					}
-				</script> -->
-				<script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.1.1/flowbite.js"></script>
-
-				<style>
-					#toast {
-						visibility: hidden;
-						max-width: 50px;
-						height: 50px;
-						/*margin-left: -125px;*/
-						margin: auto;
-						background-color: #333;
-						color: #fff;
-						text-align: center;
-						border-radius: 2px;
-
-						position: fixed;
-						z-index: 1;
-						left: 0;
-						right: 0;
-						bottom: 30px;
-						font-size: 17px;
-						white-space: nowrap;
-					}
-					#toast #img {
-						width: 50px;
-						height: 50px;
-
-						float: left;
-
-						padding-top: 16px;
-						padding-bottom: 16px;
-
-						box-sizing: border-box;
-
-						background-color: #111;
-						color: #fff;
-					}
-					#toast #desc {
-						color: #fff;
-
-						padding: 16px;
-
-						overflow: hidden;
-						white-space: nowrap;
-					}
-
-					#toast.show {
-						visibility: visible;
-						-webkit-animation: fadein 0.5s, expand 0.5s 0.5s, stay 3s 1s,
-							shrink 0.5s 2s, fadeout 0.5s 2.5s;
-						animation: fadein 0.5s, expand 0.5s 0.5s, stay 3s 1s, shrink 0.5s 4s,
-							fadeout 0.5s 4.5s;
-					}
-
-					@-webkit-keyframes fadein {
-						from {
-							bottom: 0;
-							opacity: 0;
-						}
-						to {
-							bottom: 30px;
-							opacity: 1;
-						}
-					}
-
-					@keyframes fadein {
-						from {
-							bottom: 0;
-							opacity: 0;
-						}
-						to {
-							bottom: 30px;
-							opacity: 1;
-						}
-					}
-
-					@-webkit-keyframes expand {
-						from {
-							min-width: 50px;
-						}
-						to {
-							min-width: 350px;
-						}
-					}
-
-					@keyframes expand {
-						from {
-							min-width: 50px;
-						}
-						to {
-							min-width: 350px;
-						}
-					}
-					@-webkit-keyframes stay {
-						from {
-							min-width: 350px;
-						}
-						to {
-							min-width: 350px;
-						}
-					}
-
-					@keyframes stay {
-						from {
-							min-width: 350px;
-						}
-						to {
-							min-width: 350px;
-						}
-					}
-					@-webkit-keyframes shrink {
-						from {
-							min-width: 350px;
-						}
-						to {
-							min-width: 50px;
-						}
-					}
-
-					@keyframes shrink {
-						from {
-							min-width: 350px;
-						}
-						to {
-							min-width: 50px;
-						}
-					}
-
-					@-webkit-keyframes fadeout {
-						from {
-							bottom: 30px;
-							opacity: 1;
-						}
-						to {
-							bottom: 60px;
-							opacity: 0;
-						}
-					}
-
-					@keyframes fadeout {
-						from {
-							bottom: 30px;
-							opacity: 1;
-						}
-						to {
-							bottom: 60px;
-							opacity: 0;
-						}
-					}
-					.button {
-						--width: 100px;
-						--height: 35px;
-						--tooltip-height: 35px;
-						--tooltip-width: 90px;
-						--gap-between-tooltip-to-button: 18px;
-						--button-color: #222;
-						--tooltip-color: #fff;
-						width: var(--width);
-						height: var(--height);
-						background: var(--button-color);
-						position: relative;
-						text-align: center;
-						border-radius: 0.45em;
-						font-family: 'Arial';
-						transition: background 0.3s;
-					}
-
-					.button::before {
-						position: absolute;
-						content: attr(data-tooltip);
-						width: var(--tooltip-width);
-						height: var(--tooltip-height);
-						background-color: #555;
-						font-size: 0.9rem;
-						color: #fff;
-						border-radius: 0.25em;
-						line-height: var(--tooltip-height);
-						bottom: calc(
-							var(--height) + var(--gap-between-tooltip-to-button) + 10px
-						);
-						left: calc(50% - var(--tooltip-width) / 2);
-					}
-
-					.button::after {
-						position: absolute;
-						content: '';
-						width: 0;
-						height: 0;
-						border: 10px solid transparent;
-						border-top-color: #555;
-						left: calc(50% - 10px);
-						bottom: calc(100% + var(--gap-between-tooltip-to-button) - 10px);
-					}
-
-					.button::after,
-					.button::before {
-						opacity: 0;
-						visibility: hidden;
-						transition: all 0.5s;
-					}
-
-					.text {
-						display: flex;
-						align-items: center;
-						justify-content: center;
-					}
-
-					.button-wrapper,
-					.text,
-					.icon {
-						overflow: hidden;
-						position: absolute;
-						width: 100%;
-						height: 100%;
-						left: 0;
-						color: #fff;
-					}
-
-					.text {
-						top: 0;
-					}
-
-					.text,
-					.icon {
-						transition: top 0.5s;
-					}
-
-					.icon {
-						color: #fff;
-						top: 100%;
-						display: flex;
-						align-items: center;
-						justify-content: center;
-					}
-
-					.icon svg {
-						width: 24px;
-						height: 24px;
-					}
-
-					.button:hover {
-						background: #222;
-					}
-
-					.button:hover .text {
-						top: -100%;
-					}
-
-					.button:hover .icon {
-						top: 0;
-					}
-
-					.button:hover:before,
-					.button:hover:after {
-						opacity: 1;
-						visibility: visible;
-					}
-
-					.button:hover:after {
-						bottom: calc(
-							var(--height) + var(--gap-between-tooltip-to-button) - 20px
-						);
-					}
-
-					.button:hover:before {
-						bottom: calc(var(--height) + var(--gap-between-tooltip-to-button));
-					}
-				</style>
+				</div>
 			</div>
 		</section>
 	</body>
