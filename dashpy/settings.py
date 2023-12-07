@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/4.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
-
+from decouple import config
 from pathlib import Path
 import os
 
@@ -27,6 +27,13 @@ SECRET_KEY = (
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+#  Email
+EMAIL_BACKEND = config('EMAIL_BACKEND')
+EMAIL_HOST_USER = config('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
+EMAIL_USER_TLS = config('EMAIL_USE_TLS')
+EMAIL_PORT = config('EMAIL_PORT')
+EMAIL_HOST = config('EMAIL_HOST')
 
 ALLOWED_HOSTS = []
 
@@ -42,6 +49,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'compressor',
     'vendas',
+    'usuarios',
 ]
 
 MIDDLEWARE = [

@@ -1,14 +1,22 @@
 from django.db import models
+from django.contrib.auth.models import User
+from django.utils import timezone
 
 
 class Venda(models.Model):
+    cliente = models.ForeignKey(User, on_delete=models.CASCADE)
     Produto = models.CharField(max_length=40)
-    Quantidade = models.IntegerField()
-    Preco = models.FloatField()
+    Quantidade = models.IntegerField(default=1)
+    Preco = models.FloatField(default=0.0)
     Pagamento = models.CharField(
-        max_length=30, choices=[('dinheiro', 'Dinheiro'), ('cartão', 'Cartão')]
+        max_length=30,
+        choices=[
+            ('Dinheiro', 'Dinheiro'),
+            ('Cartão', 'Cartão'),
+            ('Pix', 'Pix'),
+        ],
     )
-    Data_criacao = models.DateField()
+    Data_criacao = models.DateTimeField(timezone.now())
     Vendedor = models.CharField(
         max_length=30,
         choices=[
@@ -18,16 +26,18 @@ class Venda(models.Model):
             ('Edvania', 'Edvania'),
         ],
     )
-    Marca = models.CharField(max_length=30)
 
+    @property
+    def Total(self):
+        return self.Quantidade * self.Preco
 
-def __str__(self):
-    return '{} - {} - {} - {} - {} - {} - {}'.format(
-        self.Produto,
-        self.Quantidade,
-        self.Preco,
-        'R$ {}'.format(self.Preco),
-        self.Data_criacao,
-        self.Vendedor,
-        self.Marca,
-    )
+    def __str__(self):
+        return '{} - {} - {} - {} - {} - {} - {}'.format(
+            self.Produto,
+            self.Quantidade,
+            self.Preco,
+            'R$ {}'.format(self.Preco),
+            self.Data_criacao,
+            self.Vendedor,
+            self.Total,
+        )

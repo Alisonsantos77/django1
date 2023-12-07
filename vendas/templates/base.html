@@ -1,6 +1,6 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 	<head>
 		<meta charset="UTF-8" />
 		<link
@@ -31,16 +31,68 @@
 				<div
 					class="flex items-center md:order-2 space-x-1 md:space-x-2 rtl:space-x-reverse"
 				>
+					{% if user.is_authenticated %}
+
+					<!-- Dropdown menu -->
+
+					<img
+						class="w-10 h-10 p-1 rounded-full ring-2 ring-gray-300 dark:ring-gray-500"
+						id="avatarButton"
+						type="button"
+						data-dropdown-toggle="userDropdown"
+						data-dropdown-placement="bottom-start"
+						src="{% static 'images/lukas.jpg' %}"
+						alt="User dropdown"
+					/>
+
+					<div
+						id="userDropdown"
+						class="z-10 hidden bg-white bg divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700 dark:divide-gray-600"
+					>
+						<div class="px-4 py-3 text-sm text-gray-900 dark:text-white">
+							<div>{{user.username}}</div>
+							<div class="font-medium truncate">{{user.email}}</div>
+						</div>
+						<ul
+							class="py-2 text-sm text-gray-700 dark:text-gray-200"
+							aria-labelledby="avatarButton"
+						>
+							<li>
+								<a
+									href="#"
+									class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+									>Dashboard</a
+								>
+							</li>
+							<li>
+								<a
+									href="#"
+									class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+									>Settings</a
+								>
+							</li>
+						</ul>
+						<div class="py-1">
+							<a
+								href="{% url 'logout' %}"
+								class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
+								>Sair</a
+							>
+						</div>
+					</div>
+
+					{% else %}
 					<a
-						href="#"
+						href=" {% url 'login' %}"
 						class="text-white dark:text-white hover:bg-blue-600 focus:ring-4 focus:ring-blue-600 font-medium rounded-lg text-sm px-4 py-2 md:px-5 md:py-2.5 dark:hover:bg-gray-700 focus:outline-none dark:focus:ring-gray-800"
 						>Login</a
 					>
 					<a
-						href="#"
+						href=" {% url 'cadastro' %}"
 						class="text-blue-700 bg-white hover:bg-blue-100 focus:ring-4 focus:ring-blue-500 font-medium rounded-lg text-sm px-4 py-2 md:px-5 md:py-2.5 dark:bg-blue-600 dark:text-white dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
 						>Registrar</a
 					>
+					{% endif %}
 					<button
 						id="theme-toggle"
 						type="button"
